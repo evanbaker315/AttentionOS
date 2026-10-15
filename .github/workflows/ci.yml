@@ -43,7 +43,7 @@ jobs:
       # Test suites that need the database or media tools fail instead of skipping when CI is set.
       CI: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: pnpm/action-setup@v4
 
@@ -91,7 +91,7 @@ jobs:
       run:
         working-directory: media-py
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: astral-sh/setup-uv@v6
         with:
