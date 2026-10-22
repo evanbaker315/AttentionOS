@@ -209,7 +209,7 @@ export type PostMetricsSnapshot = {
 export type AccountStat = { day: string; platform?: Platform; followers?: number; following?: number; posts?: number; capturedAt?: string };
 
 export interface OwnAnalytics extends ProviderBase {
-  /** Posts plus latest metrics for an account, newest first. */
+  /** Posts plus latest metrics for an account, newest first. `accountId` is "me" before any accounts are synced: read the key's own accounts. */
   listPostMetrics(accountId: string, opts?: { since?: string; limit?: number }): Promise<PostMetricsSnapshot[]>;
   /** Optional: daily follower history, when the vendor exposes it. */
   listAccountStats?(accountId: string, opts?: { since?: string }): Promise<AccountStat[]>;

@@ -13,7 +13,7 @@
 # /workspace; the database runs in its own container; your Claude sign-in token (CLAUDE_CODE_OAUTH_TOKEN) and the
 # Studio access key come from the stack's env file at run time.
 
-ARG NODE_IMAGE=node:24.21.0-bookworm-slim
+ARG NODE_IMAGE=node:24.22.1-bookworm-slim
 ARG UV_IMAGE=ghcr.io/astral-sh/uv:0.13.0
 # A static ffmpeg + ffprobe (with libx264, libzimg, loudnorm, libass): ~110 MB, against ~400 MB for Debian's ffmpeg,
 # which drags in Mesa and LLVM. Swap for another image that has /ffmpeg and /ffprobe if you prefer.

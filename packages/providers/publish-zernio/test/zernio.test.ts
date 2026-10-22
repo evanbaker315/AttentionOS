@@ -54,6 +54,14 @@ describe("zernio accounts", () => {
     expect(new URL(calls[0]!.url).searchParams.get("profileId")).toBe("6a0f1c2d3e4f5a6b7c8d9e00");
   });
 
+  it("asks for every account in one call: Zernio rejects page or limit sent alone", async () => {
+    const { provider, calls } = setup([{ method: "GET", match: "/api/v1/accounts", respond: { body: { accounts: [] } } }]);
+    const h = await provider.health();
+    expect(h.detail).toContain("no social accounts are connected");
+    const params = new URL(calls[0]!.url).searchParams;
+    expect([...params.keys()]).toEqual([]);
+  });
+
   it("health reports accounts that need reconnecting, in plain language", async () => {
     const { provider } = setup([{ method: "GET", match: "/api/v1/accounts", respond: { body: f("accounts.json") } }]);
     const h = await provider.health();
@@ -274,6 +282,28 @@ describe("zernio analytics", () => {
     });
     expect(rows[0]!.follows).toBeUndefined();
     expect((rows[0]!.raw as { aos?: unknown }).aos).toEqual({ impressions: 5400 });
+  });
+
+  it("reads every account the key can see for \"me\" (no accounts synced yet), scoped to the profile when set", async () => {
+    const body = {
+      posts: [{
+        _id: "6a0f1c2d3e4f5a6b7c8d9f11",
+        platforms: [
+          { platform: "instagram", accountId: IG, platformPostId: "18000000000000043", syncStatus: "synced", analytics: { views: 10 } },
+          { platform: "tiktok", accountId: { _id: TT }, platformPostId: "7400000000000000002", syncStatus: "synced", analytics: { views: 20 } },
+        ],
+      }],
+    };
+    const { provider, calls } = setup([{ method: "GET", match: "/api/v1/analytics", respond: { body } }], { ZERNIO_PROFILE_ID: "6a0f1c2d3e4f5a6b7c8d9e00" });
+    const rows = await provider.listPostMetrics("me");
+    expect(rows.map((r) => r.platform)).toEqual(["instagram", "tiktok"]);
+    const params = new URL(calls[0]!.url).searchParams;
+    expect(params.has("accountId")).toBe(false);
+    expect(params.get("profileId")).toBe("6a0f1c2d3e4f5a6b7c8d9e00");
+
+    const one = setup([{ method: "GET", match: "/api/v1/analytics", respond: { body } }]);
+    expect((await one.provider.listPostMetrics(IG)).map((r) => r.platform)).toEqual(["instagram"]);
+    expect(new URL(one.calls[0]!.url).searchParams.get("accountId")).toBe(IG);
   });
 
   it("reads other platforms' names for watch time, completion, follows and clicks, and keeps retention curves", () => {

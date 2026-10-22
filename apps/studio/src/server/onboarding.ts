@@ -450,6 +450,13 @@ async function getJson(url: string, init: RequestInit = {}): Promise<{ status: n
   return { status: res.status, body };
 }
 
+/** Every account the key can see. No page/limit: Zernio rejects a request that sends only one of the two. */
+export function zernioAccountsUrl(profileId?: string): string {
+  const url = new URL("https://zernio.com/api/v1/accounts");
+  if (profileId) url.searchParams.set("profileId", profileId);
+  return url.toString();
+}
+
 /** Light, read-only checks with the key saved in .env (the same endpoints the providers' health checks use). */
 export async function checkConnection(id: ConnectionId, ws: StudioWorkspace = workspace()): Promise<ConnectionResult> {
   try {
@@ -458,7 +465,7 @@ export async function checkConnection(id: ConnectionId, ws: StudioWorkspace = wo
       const key = secret(ws, "ZERNIO_API_KEY");
       if (!key) return { ok: false, detail: "Paste your Zernio API key first." };
       const profile = secret(ws, "ZERNIO_PROFILE_ID");
-      const r = await getJson(`https://zernio.com/api/v1/accounts?limit=100${profile ? `&profileId=${encodeURIComponent(profile)}` : ""}`, {
+      const r = await getJson(zernioAccountsUrl(profile), {
         headers: { authorization: `Bearer ${key}`, accept: "application/json" },
       });
       if (r.status === 401 || r.status === 403) return { ok: false, detail: "Zernio didn't accept that key. Copy it again from the Zernio dashboard." };
