@@ -59,3 +59,8 @@ markers = [
   "slow: renders or encodes video (seconds each)",
   "asr: needs a real ASR model download (opt-in with ATTENTIONOS_TEST_ASR=1)",
 ]
+
+[tool.uv]
+# fastembed (embed extra) caps pillow below 13, but we only use its text models, which never import Pillow.
+# Pillow 13 fixes the CVEs pip-audit reports against 12.x. Drop this once fastembed allows 13.
+override-dependencies = ["pillow>=13"]
