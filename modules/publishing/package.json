@@ -16,6 +16,6 @@
     "@attentionos/core": "workspace:*",
     "@attentionos/db": "workspace:*",
     "@attentionos/guardrails": "workspace:*",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   }
 }
