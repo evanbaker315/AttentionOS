@@ -32,6 +32,9 @@ export const ZERNIO_SECRETS = {
   profileId: "ZERNIO_PROFILE_ID",
 } as const;
 
+/** The account id own-sync passes before any accounts are synced: "whatever this key can see". */
+const OWN_ACCOUNTS = "me";
+
 /** Zernio's per-file limit for presigned uploads. Platform limits (e.g. Instagram 300 MB) still apply. */
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024 * 1024;
 
@@ -156,7 +159,8 @@ export function create(opts: ZernioCreateOptions): ZernioProvider {
 
   async function rawAccounts() {
     requireKey();
-    const res = await http.request("GET", "/accounts", { query: { profileId: scopedProfileId, limit: 100 }, schema: accountsResponse });
+    // No page/limit: Zernio returns every account when both are left out, and rejects a request that sends only one.
+    const res = await http.request("GET", "/accounts", { query: { profileId: scopedProfileId }, schema: accountsResponse });
     for (const a of res.accounts) {
       const pid = profileIdOf(a);
       if (pid) accountProfiles.set(a._id, pid);
@@ -385,15 +389,17 @@ export function create(opts: ZernioCreateOptions): ZernioProvider {
 
     async listPostMetrics(accountId: string, o = {}): Promise<PostMetricsSnapshot[]> {
       requireKey();
+      // "me" (no accounts synced into AttentionOS yet) reads every account the key can see, within ZERNIO_PROFILE_ID if set.
+      const scope = accountId === OWN_ACCOUNTS ? { profileId: scopedProfileId } : { accountId };
       const res = await http.request("GET", "/analytics", {
-        query: { accountId, source: "all", fromDate: o.since ? o.since.slice(0, 10) : undefined, limit: Math.min(o.limit ?? 50, 100), sortBy: "date" },
+        query: { ...scope, source: "all", fromDate: o.since ? o.since.slice(0, 10) : undefined, limit: Math.min(o.limit ?? 50, 100), sortBy: "date" },
         schema: analyticsResponse,
       });
       const capturedAt = now().toISOString();
       const out: PostMetricsSnapshot[] = [];
       for (const p of res.posts) {
         const entries = p.platforms?.length
-          ? p.platforms.filter((e) => !e.accountId || acctOf(e.accountId) === accountId)
+          ? p.platforms.filter((e) => !("accountId" in scope) || !e.accountId || acctOf(e.accountId) === accountId)
           : [{ platform: p.platform, platformPostId: p.platformPostId, platformPostUrl: p.platformPostUrl, analytics: p.analytics, syncStatus: undefined }];
         for (const e of entries) {
           const platform = fromZernioPlatform(e.platform);

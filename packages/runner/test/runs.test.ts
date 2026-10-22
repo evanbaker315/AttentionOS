@@ -212,8 +212,11 @@ describe("runLlmJob", () => {
   });
 
   it("refuses to start when today's budget is spent", async () => {
-    const broke = await fakeWorkspace(db.sql, "runner-broke", { secrets: { ANTHROPIC_API_KEY: "k" }, config: { runner: { engine: "api" } } });
-    await db.sql`insert into cost_ledger (workspace_id, category, provider, amount_micro) values (${broke.id}, 'llm', 'anthropic', 5000000)`;
+    // Fixed clock (midday in the workspace timezone): the ledger row is an hour earlier the same day, so it can never land
+    // after `now` (Postgres keeps microseconds, Date only milliseconds) or on the other side of midnight.
+    const now = new Date("2026-10-14T17:00:00Z");
+    const broke = await fakeWorkspace(db.sql, "runner-broke", { secrets: { ANTHROPIC_API_KEY: "k" }, config: { runner: { engine: "api" } }, now });
+    await db.sql`insert into cost_ledger (workspace_id, category, provider, amount_micro, ts) values (${broke.id}, 'llm', 'anthropic', 5000000, ${new Date(now.getTime() - 3_600_000)})`;
     const { query, calls } = fakeQuery(async function* () {
       yield success("x");
     });
