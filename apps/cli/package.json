@@ -88,6 +88,6 @@
     "@attentionos/runner": "workspace:*",
     "@attentionos/runtime": "workspace:*",
     "@attentionos/worker": "workspace:*",
-    "tsup": "^8.5.1"
+    "tsup": "^9.0.0"
   }
 }
