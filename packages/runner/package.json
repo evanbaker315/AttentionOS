@@ -12,12 +12,12 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@anthropic-ai/claude-agent-sdk": "^0.3.296",
-    "@anthropic-ai/sdk": "^0.133.0",
+    "@anthropic-ai/claude-agent-sdk": "^0.3.303",
+    "@anthropic-ai/sdk": "^0.135.0",
     "@attentionos/core": "workspace:*",
     "@attentionos/mcp": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.32.1",
-    "zod": "^4.6.5",
+    "zod": "^4.6.7",
     "@attentionos/db": "workspace:*",
     "@attentionos/runtime": "workspace:*"
   }

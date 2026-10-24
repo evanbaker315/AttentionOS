@@ -17,6 +17,6 @@
     "@attentionos/guardrails": "workspace:*",
     "@attentionos/media": "workspace:*",
     "@attentionos/module-research": "workspace:*",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   }
 }

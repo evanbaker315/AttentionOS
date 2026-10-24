@@ -14,7 +14,7 @@
   "dependencies": {
     "@attentionos/core": "workspace:*",
     "fast-xml-parser": "^5.11.2",
-    "zod": "^4.6.5",
+    "zod": "^4.6.7",
     "@attentionos/provider-shared": "workspace:*"
   }
 }
