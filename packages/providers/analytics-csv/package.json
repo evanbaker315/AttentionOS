@@ -9,5 +9,5 @@
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
-  "dependencies": { "@attentionos/core": "workspace:*", "zod": "^4.6.5" }
+  "dependencies": { "@attentionos/core": "workspace:*", "zod": "^4.6.7" }
 }
