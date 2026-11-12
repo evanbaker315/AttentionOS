@@ -9,5 +9,5 @@
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
-  "dependencies": { "@attentionos/core": "workspace:*", "@attentionos/scoring": "workspace:*", "@attentionos/module-research": "workspace:*", "@attentionos/module-learn": "workspace:*", "postgres": "^3.4.9", "yaml": "^2.9.1", "zod": "^4.6.5" }
+  "dependencies": { "@attentionos/core": "workspace:*", "@attentionos/scoring": "workspace:*", "@attentionos/module-research": "workspace:*", "@attentionos/module-learn": "workspace:*", "postgres": "^3.4.9", "yaml": "^2.9.1", "zod": "^4.6.7" }
 }
